@@ -5,7 +5,7 @@ An assignment to demonstrate programmatic interfaces to cloud software
 
 The goal of this assignment is to have you understand the benefit of cloud environments in constructing and managing datacenter applications.
 
-This assignment consistts of three parts:
+This assignment consists of three parts:
 * You will write a program that creates and configures a virtual machine, installs a software application from a `git` repository, modifies firewall rules so that the software is accessible and then instructs the user to visit a specific web page to use the software.
 * You will write another program that will create a "snapshot" of the virtual machine created in the first exercise and use that snapshot to create an [image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images#before-you-begin). You will then create three new instances using your image while measuring the time needed to create each instance.
 * You will create and use a [service account](https://cloud.google.com/iam/docs/understanding-service-accounts) and use those credentials to create a virtual machine that will then create another virtual machine. This essentially amounts to stuffing the code from the first part into another virtual machine. The service account can "act like" your user with the access rights you choose to provide. By default, Google Cloud instances also [have a default service account that gives you instance the ability to access specific services](https://cloud.google.com/compute/docs/access/service-accounts#user-managed). We're asking you to [create an service account and specifically use that in you Python application](https://cloud.google.com/compute/docs/access#access_control_for_apps_running_on_vm_instances).
