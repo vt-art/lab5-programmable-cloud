@@ -284,13 +284,14 @@ exec > >(tee -a "$LOG") 2>&1
 
 APP_DIR=/opt/flask-tutorial
 REPO_DIR="$APP_DIR/flask-tutorial"
+VENV_DIR="$APP_DIR/venv"
 READY_FILE="$APP_DIR/READY"
 
 mkdir -p "$APP_DIR"
 cd "$APP_DIR"
 
 apt-get update
-apt-get install -y python3 python3-pip python3-venv git
+apt-get install -y python3 python3-pip python3-venv git ca-certificates
 
 if [ ! -d "$REPO_DIR" ]; then
   git clone https://github.com/cu-csci-4253-datacenter/flask-tutorial "$REPO_DIR"
@@ -298,14 +299,16 @@ fi
 
 cd "$REPO_DIR"
 
-python3 -m pip install --upgrade pip
-python3 -m pip install -e .
+# Create and use a venv to avoid Ubuntu distutils package conflicts (e.g., blinker)
+python3 -m venv "$VENV_DIR"
+source "$VENV_DIR/bin/activate"
+
+python -m pip install --upgrade pip
+python -m pip install -e .
 
 export FLASK_APP=flaskr
+python -m flask init-db
 
-python3 -m flask init-db
-
-# Write systemd service file (quoted EOF prevents variable expansion)
 cat >/etc/systemd/system/flask-tutorial.service <<'EOF'
 [Unit]
 Description=Flask Tutorial App
@@ -314,7 +317,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/flask-tutorial/flask-tutorial
 Environment=FLASK_APP=flaskr
-ExecStart=/usr/bin/python3 -m flask run -h 0.0.0.0 -p 5000
+ExecStart=/opt/flask-tutorial/venv/bin/python -m flask run -h 0.0.0.0 -p 5000
 Restart=always
 RestartSec=2
 
@@ -329,6 +332,7 @@ sleep 2
 systemctl is-active --quiet flask-tutorial.service
 touch "$READY_FILE"
 """
+
 
 # Function to create VM-1 instance
 def create_vm1_instance(

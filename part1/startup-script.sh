@@ -31,6 +31,17 @@ fi
 # move into the repo directory
 cd "$REPO_DIR"
 
+# Create and use a virtual environment to avoid conflicts with OS Python packages
+python3 -m venv /opt/flask-tutorial/venv
+source /opt/flask-tutorial/venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install -e .
+
+export FLASK_APP=flaskr
+python -m flask init-db
+
+
 # Make sure pip is up to date, then install the app
 python3 -m pip install --upgrade pip
 pip3 install -e .
@@ -54,7 +65,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/flask-tutorial/flask-tutorial
 Environment=FLASK_APP=flaskr
-ExecStart=/usr/bin/python3 -m flask run -h 0.0.0.0 -p 5000
+ExecStart=/opt/flask-tutorial/venv/bin/python -m flask run -h 0.0.0.0 -p 5000
 Restart=always
 RestartSec=2
 
